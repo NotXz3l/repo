@@ -1,13 +1,7 @@
-repeat task.wait(0.65) until game:IsLoaded()
 local HttpService = game:GetService("HttpService")
 local function try(fn, ...)
     return (pcall(fn, ...))
 end
-game.CoreGui:SetCore("SendNotification", {
-	Title = "[STALE]";
-	Text = "pwned by stale";
-	Duration = 2;
-})
 for _, con in next, getconnections(game:GetService("LogService").MessageOut) do
     con:Disable()
 end
