@@ -2,52 +2,31 @@ local HttpService = game:GetService("HttpService")
 local function try(fn, ...)
     return (pcall(fn, ...))
 end
-for _, con in next, getconnections(game:GetService("LogService").MessageOut) do
-    con:Disable()
-end
+loadstring(game:HttpGet("https://raw.githubusercontent.com/NotXz3l/StaleScripts/refs/heads/main/Drawing.luau"))()
 getgenv().httppost = function(URL, body, contenttype) 
     return game:HttpPostAsync(URL, body, contenttype)
 end
-getgenv().identifyexecutor = function()
-    return "Stale v2.0.0"
+getgenv().type_check = function(argument_position: number, value: any, allowed_types: {any}, optional: boolean?)
+	local formatted_arguments = table.concat(allowed_types, " or ")
+
+	if value == nil and not optional and not table.find(allowed_types, "nil") then
+		error(("missing argument #%d (expected %s)"):format(argument_position, formatted_arguments), 0)
+	elseif value == nil and optional == true then
+		return value
+	end
+
+	if not (table.find(allowed_types, typeof(value)) or table.find(allowed_types, type(value)) or table.find(allowed_types, value)) and not table.find(allowed_types, "any") then
+		error(("invalid argument #%d (expected %s, got %s)"):format(argument_position, formatted_arguments, typeof(value)), 0)
+	end
+
+	return value
 end
-getgenv().executorname = identifyexecutor
-getgenv().whatexecutorname = identifyexecutor
-getgenv().getconnections(rl) = function()
-    if type(rl) ~= "userdata" then
-        error("expected userdata as the first argument", 2)
-    end
-    local connect = rl.connect
-    if not connect then
-        error("userdata does not have a 'connect' method", 2)
-    end
-    local signal = connect(rl, function() end)
-    local next = signal.nextsignal
-    local connections = {}
-    local count = 1
-    while next ~= 0 do
-        if connection_environment.connections[next] then
-            table.insert(connections, connection_environment.connections[next])
-        else
-            local new_connection = {
-                object = next,
-                oldstate = next.state
-            }
-            table.insert(connections, new_connection)
-            connection_environment.connections[next] = new_connection
-        end
-        next = next.nextsignal
-        count = count + 1
-    end
-    signal:disconnect()
-    return connections
-end
-local oldr = request
+local oldr = request 
 getgenv().request = function(options)
 	if options.Headers then
-		options.Headers["User-Agent"] = "STL/RobloxApp/2.1"
+		options.Headers["User-Agent"] = "ST4/RobloxApp/2.1"
 	else
-		options.Headers = {["User-Agent"] = "STL/RobloxApp/2.1"}
+		options.Headers = {["User-Agent"] = "ST4/RobloxApp/2.1"}
 	end
 	local response = oldr(options)
 	return response
@@ -83,6 +62,41 @@ getgenv().hookmetamethod = function(obj, method, hook)
         end
     end
 end
+
+getgenv().cclosure = function(f)
+    return coroutine.wrap(function(...)
+        while true do
+            coroutine.yield(f(...))
+        end
+    end)
+end
+
+local function setreadonly(obj, value)
+    local mt = getmetatable(obj)
+    
+    if mt and type(mt) == "table" then
+        if value == true then
+            mt.__oldindex = mt.__newindex
+            mt.__newindex = cclosure(function() error("attempt to modify a readonly table", 0) end)
+        else
+            if mt.__oldindex then
+                mt.__newindex = mt.__oldindex
+                mt.__oldindex = nil
+            elseif mt.__readonly then
+                mt.__newindex = nil
+                mt.__readonly = nil
+            end
+        end
+    elseif not mt then
+        setmetatable(obj, {
+            __newindex = cclosure(function() error("attempt to modify a readonly table", 0) end),
+            __readonly = true
+        })
+    else
+        error("unable to safely freeze table")
+    end
+end
+
 getgenv().getthreadidentity = function()
 	local securityChecks = {
 		{
@@ -131,19 +145,4 @@ getgenv().getthreadidentity = function()
 	end
 	return lasti
 end
-local libs = {
-    {
-        ['name'] = "Environment Wrapper",
-        ['url'] = "http://luau-executors.github.io/assets/Security.luau"
-    }
-}
-local function load_lib(libName)
-    for _, lib in ipairs(libs) do
-        if lib.name == libName then
-            local response = game:HttpGet(lib.url)
-            return loadstring(response)()
-        end
-    end
-    return nil
-end
-load_lib("Environment Wrapper")
+loadstring(game:HttpGet("http://luau-executors.github.io/assets/Security.luau"))()
