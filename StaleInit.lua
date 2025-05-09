@@ -1,4 +1,4 @@
-repeat task.wait(0.5) until game:IsLoaded()
+repeat task.wait(0.65) until game:IsLoaded()
 local HttpService = game:GetService("HttpService")
 local function try(fn, ...)
     return (pcall(fn, ...))
@@ -6,9 +6,8 @@ end
 game.CoreGui:SetCore("SendNotification", {
 	Title = "[STALE]";
 	Text = "pwned by stale";
-	Duration = 1;
+	Duration = 2;
 })
-
 for _, con in next, getconnections(game:GetService("LogService").MessageOut) do
     con:Disable()
 end
@@ -20,10 +19,6 @@ getgenv().identifyexecutor = function()
 end
 getgenv().executorname = identifyexecutor
 getgenv().whatexecutorname = identifyexecutor
-getgenv().slt = {}
-getgenv().slt.namingstandard = function()
-    loadstring(game:HttpGet("https://gitlab.com/sens3/nebunu/-/raw/main/HummingBird8's_sUNC_yes_i_moved_to_gitlab_because_my_github_acc_got_brickedd/sUNCm0m3n7.lua"))()
-end
 getgenv().getconnections(rl) = function()
     if type(rl) ~= "userdata" then
         error("expected userdata as the first argument", 2)
@@ -54,7 +49,7 @@ getgenv().getconnections(rl) = function()
     return connections
 end
 local oldr = request
-getgenv().slt.request = function(options)
+getgenv().request = function(options)
 	if options.Headers then
 		options.Headers["User-Agent"] = "STL/RobloxApp/2.1"
 	else
@@ -63,7 +58,7 @@ getgenv().slt.request = function(options)
 	local response = oldr(options)
 	return response
 end 
-getgenv().slt.hookmetav2 = function(obj, method, hook)
+getgenv().hookmetamethod = function(obj, method, hook)
     assert(type(obj) == "table" or type(obj) == "userdata", "Argument #1 (obj) must be a table or userdata")
     assert(type(method) == "string", "Argument #2 (method) must be a string")
     assert(type(hook) == "function", "Argument #3 (hook) must be a function")
